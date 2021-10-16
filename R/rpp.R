@@ -10,14 +10,11 @@ rpp_elide <- function(lines, ...) {
     return(lines)
   }
 
-  new_lines <-
-    lines |>
-    styler:::compute_parse_data_nested(NULL, 0) |>
-    # FIXME: We should be eliding the argument type only for functions.
-    elide_arg_type() |>
-    elide_return_type() |>
-    elide_types() |>
-    unnest_pd()
+  nested <- styler:::compute_parse_data_nested(lines, NULL, 0)
+  no_arg_types <- elide_arg_type(nested)
+  no_return_types <- elide_return_type(no_arg_types)
+  no_types <- elide_types(no_return_types)
+  new_lines <- unnest_pd(no_types)
 
   new_lines <- strsplit(new_lines, "\n")[[1]]
 
